@@ -11,20 +11,31 @@ import {
     Button,
 } from "semantic-ui-react";
 import DeleteModal from "./DeleteModal";
+import CreateEditModal from "./CreateEditModal";
 
 export default function BooksTable() {
 
     const [books, setBooks] = useState<Book[]>([]);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [selectedBookId, setSelectedBookId] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [createEditModalOpen, setCreateEditModalOpen] = useState(false);
+    const [selectedBook, setSelectedBook] = useState<Book>();
 
-    const handleOpenModal = (id: any) => {
-        setSelectedBookId(id);
-        setModalOpen(true);
-    };
+    const handleOpenModal = (modalName: string,book?: Book) => {
+        setSelectedBook(book);
+        switch (modalName) {
+            case "delete":
+                setDeleteModalOpen(true);
+                break;
+            case "createEdit":
+                setCreateEditModalOpen(true);
+                break;
+        }
+ 
+    }
 
     const handleCloseModal = () => {
-        setModalOpen(false);
+        setDeleteModalOpen(false);
+        setCreateEditModalOpen(false);
     };
 
     const updateStateOnDeletion = (id: string) => {
@@ -39,6 +50,9 @@ export default function BooksTable() {
     }, []);
     return (
         <Container style={{ marginTop: '7em' }}>
+            <div style={{display: "flex", justifyContent: "right"}}>
+                <Button positive content="Create a book" onClick={() => handleOpenModal("createEdit")} />
+            </div>
             <Table celled>
                 <TableHeader>
                     <TableRow>
@@ -58,14 +72,15 @@ export default function BooksTable() {
                             <TableCell>{book.publishDate?.toString()}</TableCell>
                             <TableCell>{book.genre}</TableCell>
                             <TableCell>
-                                <Button primary content="Edit" />
-                                <Button negative content="Delete" onClick={() => handleOpenModal(book.id)} />
+                                <Button primary content="Edit" onClick={() => handleOpenModal("createEdit", book)} />
+                                <Button negative content="Delete" onClick={() => handleOpenModal("delete", book)} />
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-            <DeleteModal open={modalOpen} close={handleCloseModal} bookId={selectedBookId} updateStateOnDeletion={updateStateOnDeletion} />
+            <DeleteModal open={deleteModalOpen} close={handleCloseModal} book={selectedBook!} updateStateOnDeletion={updateStateOnDeletion} />
+            <CreateEditModal open={createEditModalOpen} close={handleCloseModal} book={selectedBook} />
         </Container>
     )
 }

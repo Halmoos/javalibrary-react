@@ -5,6 +5,8 @@ import App from './app/layout/App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css';
 import 'react-toastify/dist/ReactToastify.min.css';
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
