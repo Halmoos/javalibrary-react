@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, FormInput, Label, Modal, ModalActions, ModalContent, ModalHeader } from "semantic-ui-react";
 import { Book } from "../models/book";
 import ReactDatePicker from "react-datepicker";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 interface Props {
     open: boolean,
     close: any,
-    book?: Book
+    book?: Book,
+    updateStateOnCreateOrEdit: (book: Book) => void
 }
 
-export default function CreateEditModal({open, close, book} : Props) {
+export default function CreateEditModal({open, close, book, updateStateOnCreateOrEdit} : Props) {
 
     const initialState: Book = book ? {
         id: book.id,
@@ -25,7 +28,7 @@ export default function CreateEditModal({open, close, book} : Props) {
         genre: ""
     };
 
-    const [formState, setFormState] = useState<Book | undefined>(initialState);
+    const [formState, setFormState] = useState<Book>(initialState);
     const {name, author, publishDate, genre} = formState || {id: '', name: '', author: '', publishDate: new Date(), genre: ''};
 
     useEffect(() => {
@@ -63,8 +66,26 @@ export default function CreateEditModal({open, close, book} : Props) {
         }));
     }
 
-    const handleSubmit = () => {
-        console.log("From values" ,formState)
+    const handleSubmit = async () => {
+        try{
+            const {id, ...bodyData} = formState
+            if (formState?.id) {
+                await axios.put(`http://localhost:8080/api/book/${formState.id}`, bodyData)
+                toast.success("Book updated successfully")
+            } else {
+                /* TO DO
+                    Fix date mistmatch between front end and backend (upon creation the posted date gets saved with -1 day in the database)
+                */
+                await axios.post(`http://localhost:8080/api/book`, bodyData)
+                toast.success("Book created successfully")
+            }
+            updateStateOnCreateOrEdit(formState)
+            close()
+        }
+        catch(error: any) {
+            toast.error("Problem creating or editing book")
+        }
+
     }
 
     return (
@@ -75,13 +96,13 @@ export default function CreateEditModal({open, close, book} : Props) {
             <ModalHeader>{book ? "Edit content" : "Create a book"}</ModalHeader>
             <ModalContent>
                 <Form onSubmit={handleSubmit}>
-                    <FormInput label="Book Name" placeholder="Book Name" name="name" value={name} onChange={handleInputChange} />
-                    <FormInput label="Author" placeholder="Author" name="author" value={author} onChange={handleInputChange} />
+                    <FormInput required label="Book Name" placeholder="Book Name" name="name" value={name} onChange={handleInputChange} />
+                    <FormInput required label="Author" placeholder="Author" name="author" value={author} onChange={handleInputChange} />
                     <div style={{display: "flex", flexDirection: "column", marginBottom: "1em"}}>
                         <Label content="Publish Date" />    
                         <ReactDatePicker placeholderText="Select Date..." selected={publishDate} onChange={(date: Date) => handleDateChange(date)}/>
                     </div>
-                    <FormInput label="Genre" placeholder="Genre" name="genre" value={genre} onChange={handleInputChange} />
+                    <FormInput required label="Genre" placeholder="Genre" name="genre" value={genre} onChange={handleInputChange} />
                 </Form>
             </ModalContent>
 

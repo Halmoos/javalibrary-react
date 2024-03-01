@@ -12,6 +12,7 @@ import {
 } from "semantic-ui-react";
 import DeleteModal from "./DeleteModal";
 import CreateEditModal from "./CreateEditModal";
+import { format } from "date-fns";
 
 export default function BooksTable() {
 
@@ -37,6 +38,16 @@ export default function BooksTable() {
         setDeleteModalOpen(false);
         setCreateEditModalOpen(false);
     };
+
+    const updateStateOnCreateOrEdit = (book: Book) => {
+        setBooks(prevBooks => {
+            if (book.id) {
+              return prevBooks.map(x => x.id === book.id ? book : x);
+            } else {
+              return [...prevBooks, book];
+            }
+         })
+    }
 
     const updateStateOnDeletion = (id: string) => {
         setBooks(books.filter(x => x.id !== id))
@@ -69,7 +80,7 @@ export default function BooksTable() {
                         <TableRow key={book.id}>
                             <TableCell>{book.name}</TableCell>
                             <TableCell>{book.author}</TableCell>
-                            <TableCell>{book.publishDate?.toString()}</TableCell>
+                            <TableCell>{book.publishDate ? format(book.publishDate, 'yyyy-MM-dd') : ''}</TableCell>
                             <TableCell>{book.genre}</TableCell>
                             <TableCell>
                                 <Button primary content="Edit" onClick={() => handleOpenModal("createEdit", book)} />
@@ -80,7 +91,7 @@ export default function BooksTable() {
                 </TableBody>
             </Table>
             <DeleteModal open={deleteModalOpen} close={handleCloseModal} book={selectedBook!} updateStateOnDeletion={updateStateOnDeletion} />
-            <CreateEditModal open={createEditModalOpen} close={handleCloseModal} book={selectedBook} />
+            <CreateEditModal open={createEditModalOpen} close={handleCloseModal} book={selectedBook} updateStateOnCreateOrEdit={updateStateOnCreateOrEdit} />
         </Container>
     )
 }

@@ -11,16 +11,18 @@ interface Props {
     updateStateOnDeletion: (id: string) => void
 }
 
-const handleDeleteClick = async (book: Book) => {
-    try{
-        await axios.delete(`http://localhost:8080/api/book/${book.id}`)
-        toast.success("Book deleted successfully!")
-    } catch (error: any) {
-        toast.error("Problem deleting book")
-    }
-}
-
 export default function DeleteModal({open, close, book, updateStateOnDeletion} : Props) {
+
+    const handleDelete = async (book: Book) => {
+        try{
+            await axios.delete(`http://localhost:8080/api/book/${book.id}`)
+            toast.success("Book deleted successfully!")
+            updateStateOnDeletion(book.id)
+        } catch (error: any) {
+            toast.error("Problem deleting book")
+        }
+    }
+
     return (
         <Modal
             open={open}
@@ -29,8 +31,7 @@ export default function DeleteModal({open, close, book, updateStateOnDeletion} :
             header='Caution!'
             content={`Are you sure you want to delete this book?`}
             actions={['Cancel', { key: 'done', content: 'Delete', negative: true, 
-                        onClick: () => {handleDeleteClick(book);
-                                        updateStateOnDeletion(book.id)} }]}
+                        onClick: () => handleDelete(book)}]}
         />
     )
 }
