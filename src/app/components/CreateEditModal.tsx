@@ -12,7 +12,7 @@ interface Props {
     updateStateOnCreateOrEdit: (book: Book) => void
 }
 
-export default function CreateEditModal({open, close, book, updateStateOnCreateOrEdit} : Props) {
+export default function CreateEditModal({ open, close, book, updateStateOnCreateOrEdit }: Props) {
 
     const initialState: Book = book ? {
         id: book.id,
@@ -29,7 +29,7 @@ export default function CreateEditModal({open, close, book, updateStateOnCreateO
     };
 
     const [formState, setFormState] = useState<Book>(initialState);
-    const {name, author, publishDate, genre} = formState || {id: '', name: '', author: '', publishDate: new Date(), genre: ''};
+    const { name, author, publishDate, genre } = formState || { id: '', name: '', author: '', publishDate: new Date(), genre: '' };
 
     useEffect(() => {
         if (book) {
@@ -66,23 +66,52 @@ export default function CreateEditModal({open, close, book, updateStateOnCreateO
         }));
     }
 
+    const validateForm = () => {
+        let isValid = true;
+
+        if (!formState.name.trim()) {
+            toast.error('Name is required')
+            isValid = false
+        }
+        if (!formState.author.trim()) {
+            toast.error('Author is required')
+            isValid = false
+        }
+        if (!formState.publishDate) {
+            toast.error('Publish Date is required')
+            isValid = false
+        }
+        if (!formState.genre.trim()) {
+            toast.error('Genre is required')
+            isValid = false
+        }
+        return isValid
+    };
+
     const handleSubmit = async () => {
-        try{
-            const {id, ...bodyData} = formState
+        if (!validateForm()) {
+            return;
+        }
+        try {
+            const { id, ...bodyData } = formState
+            let bookFromResponse: Book = {
+                id: "",
+                name: "",
+                author: "",
+                publishDate: null,
+                genre: ""
+            }
             if (formState?.id) {
                 await axios.put(`http://localhost:8080/api/book/${formState.id}`, bodyData)
                 toast.success("Book updated successfully")
             } else {
-                /* TO DO
-                    Fix date mistmatch between front end and backend (upon creation the posted date gets saved with -1 day in the database)
-                */
-                await axios.post(`http://localhost:8080/api/book`, bodyData)
+                await axios.post(`http://localhost:8080/api/book`, bodyData).then((response) => { bookFromResponse = response.data })
                 toast.success("Book created successfully")
             }
-            updateStateOnCreateOrEdit(formState)
+            updateStateOnCreateOrEdit(bookFromResponse)
             close()
         }
-        catch(error: any) {
+        catch (error: any) {
             toast.error("Problem creating or editing book")
         }
 
@@ -98,9 +127,9 @@ export default function CreateEditModal({open, close, book, updateStateOnCreateO
                 <Form onSubmit={handleSubmit}>
                     <FormInput required label="Book Name" placeholder="Book Name" name="name" value={name} onChange={handleInputChange} />
                     <FormInput required label="Author" placeholder="Author" name="author" value={author} onChange={handleInputChange} />
-                    <div style={{display: "flex", flexDirection: "column", marginBottom: "1em"}}>
-                        <Label content="Publish Date" />    
-                        <ReactDatePicker placeholderText="Select Date..." selected={publishDate} onChange={(date: Date) => handleDateChange(date)}/>
+                    <div style={{ display: "flex", flexDirection: "column", marginBottom: "1em" }}>
+                        <Label content="Publish Date" />
+                        <ReactDatePicker placeholderText="Select Date..." selected={publishDate} onChange={(date: Date) => handleDateChange(date)} />
                     </div>
                     <FormInput required label="Genre" placeholder="Genre" name="genre" value={genre} onChange={handleInputChange} />
                 </Form>
