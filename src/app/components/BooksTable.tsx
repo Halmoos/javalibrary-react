@@ -66,7 +66,7 @@ export default function BooksTable() {
             </div>
             <Table celled>
                 <TableHeader>
-                    <TableRow>
+                    <TableRow data-testid="tableRow">
                         <TableHeaderCell>Book Name</TableHeaderCell>
                         <TableHeaderCell>Author</TableHeaderCell>
                         <TableHeaderCell>Publish Date</TableHeaderCell>
@@ -77,7 +77,7 @@ export default function BooksTable() {
 
                 <TableBody>
                     {books.map(book => (
-                        <TableRow key={book.id}>
+                        <TableRow data-testid="tableRow" key={book.id}>
                             <TableCell>{book.name}</TableCell>
                             <TableCell>{book.author}</TableCell>
                             <TableCell>{book.publishDate ? format(book.publishDate, 'yyyy-MM-dd') : ''}</TableCell>
