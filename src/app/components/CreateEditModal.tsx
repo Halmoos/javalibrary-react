@@ -138,7 +138,7 @@ export default function CreateEditModal({ open, close, book, updateStateOnCreate
 
             <ModalActions>
                 <Button content="Cancel" onClick={close} />
-                <Button positive content={book ? "Edit" : "Create"} key={'done'} onClick={handleSubmit} />
+                <Button data-testid={"createOrEditButton"} positive content={book ? "Edit" : "Create"} key={'done'} onClick={handleSubmit} />
             </ModalActions>
         </Modal>
     )

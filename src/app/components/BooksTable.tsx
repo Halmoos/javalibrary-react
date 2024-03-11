@@ -21,7 +21,7 @@ export default function BooksTable() {
     const [createEditModalOpen, setCreateEditModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState<Book>();
 
-    const handleOpenModal = (modalName: string,book?: Book) => {
+    const handleOpenModal = (modalName: string, book?: Book) => {
         setSelectedBook(book);
         switch (modalName) {
             case "delete":
@@ -31,7 +31,7 @@ export default function BooksTable() {
                 setCreateEditModalOpen(true);
                 break;
         }
- 
+
     }
 
     const handleCloseModal = () => {
@@ -43,11 +43,11 @@ export default function BooksTable() {
         const bookExists = books.some(x => x.id === book.id);
         setBooks(prevBooks => {
             if (bookExists) {
-              return prevBooks.map(x => x.id === book.id ? book : x);
+                return prevBooks.map(x => x.id === book.id ? book : x);
             } else {
-              return [...prevBooks, book];
+                return [...prevBooks, book];
             }
-         })
+        })
     }
 
     const updateStateOnDeletion = (id: string) => {
@@ -62,7 +62,7 @@ export default function BooksTable() {
     }, []);
     return (
         <Container style={{ marginTop: '7em' }}>
-            <div style={{display: "flex", justifyContent: "right"}}>
+            <div style={{ display: "flex", justifyContent: "right" }}>
                 <Button positive content="Create a book" onClick={() => handleOpenModal("createEdit")} />
             </div>
             <Table celled>
@@ -79,10 +79,10 @@ export default function BooksTable() {
                 <TableBody>
                     {books.map(book => (
                         <TableRow data-testid="tableRow" key={book.id}>
-                            <TableCell>{book.name}</TableCell>
-                            <TableCell>{book.author}</TableCell>
-                            <TableCell>{book.publishDate ? format(book.publishDate, 'yyyy-MM-dd') : ''}</TableCell>
-                            <TableCell>{book.genre}</TableCell>
+                            <TableCell data-testid={`book-name-${book.id}`}>{book.name}</TableCell>
+                            <TableCell data-testid={`book-author-${book.id}`}>{book.author}</TableCell>
+                            <TableCell data-testid={`book-publishDate-${book.id}`}>{book.publishDate ? format(book.publishDate, 'yyyy-MM-dd') : ''}</TableCell>
+                            <TableCell data-testid={`book-genre-${book.id}`}>{book.genre}</TableCell>
                             <TableCell>
                                 <Button primary content="Edit" data-testid={`edit-button-${book.id}`} onClick={() => handleOpenModal("createEdit", book)} />
                                 <Button negative content="Delete" data-testid={`delete-button-${book.id}`} onClick={() => handleOpenModal("delete", book)} />
