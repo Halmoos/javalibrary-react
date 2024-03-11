@@ -104,12 +104,13 @@ export default function CreateEditModal({ open, close, book, updateStateOnCreate
             if (formState?.id) {
                 await axios.put(`http://localhost:8080/api/book/${formState.id}`, bodyData)
                 toast.success("Book updated successfully")
+                updateStateOnCreateOrEdit(formState);
             } else {
                 await axios.post(`http://localhost:8080/api/book`, bodyData).then((response) => { bookFromResponse = response.data })
                 toast.success("Book created successfully")
+                updateStateOnCreateOrEdit(bookFromResponse);
             }
-            updateStateOnCreateOrEdit(bookFromResponse)
-            close()
+            close();
         }
         catch (error: any) {
             toast.error("Problem creating or editing book")
@@ -125,13 +126,13 @@ export default function CreateEditModal({ open, close, book, updateStateOnCreate
             <ModalHeader>{book ? "Edit content" : "Create a book"}</ModalHeader>
             <ModalContent>
                 <Form onSubmit={handleSubmit}>
-                    <FormInput required label="Book Name" placeholder="Book Name" name="name" value={name} onChange={handleInputChange} />
-                    <FormInput required label="Author" placeholder="Author" name="author" value={author} onChange={handleInputChange} />
-                    <div style={{ display: "flex", flexDirection: "column", marginBottom: "1em" }}>
+                    <FormInput required label="Book Name" placeholder="Book Name" name="name" value={name} data-testid={"input"} onChange={handleInputChange} />
+                    <FormInput required label="Author" placeholder="Author" name="author" value={author} data-testid={"input"} onChange={handleInputChange} />
+                    <div style={{ display: "flex", flexDirection: "column", marginBottom: "1em" }} data-testid={"input"}>
                         <Label content="Publish Date" />
                         <ReactDatePicker placeholderText="Select Date..." selected={publishDate} onChange={(date: Date) => handleDateChange(date)} />
                     </div>
-                    <FormInput required label="Genre" placeholder="Genre" name="genre" value={genre} onChange={handleInputChange} />
+                    <FormInput required label="Genre" placeholder="Genre" name="genre" value={genre} data-testid={"input"} onChange={handleInputChange} />
                 </Form>
             </ModalContent>
 

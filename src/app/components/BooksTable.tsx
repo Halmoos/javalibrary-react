@@ -40,8 +40,9 @@ export default function BooksTable() {
     };
 
     const updateStateOnCreateOrEdit = (book: Book) => {
+        const bookExists = books.some(x => x.id === book.id);
         setBooks(prevBooks => {
-            if (book.id) {
+            if (bookExists) {
               return prevBooks.map(x => x.id === book.id ? book : x);
             } else {
               return [...prevBooks, book];
@@ -83,8 +84,8 @@ export default function BooksTable() {
                             <TableCell>{book.publishDate ? format(book.publishDate, 'yyyy-MM-dd') : ''}</TableCell>
                             <TableCell>{book.genre}</TableCell>
                             <TableCell>
-                                <Button primary content="Edit" onClick={() => handleOpenModal("createEdit", book)} />
-                                <Button negative content="Delete" onClick={() => handleOpenModal("delete", book)} />
+                                <Button primary content="Edit" data-testid={`edit-button-${book.id}`} onClick={() => handleOpenModal("createEdit", book)} />
+                                <Button negative content="Delete" data-testid={`delete-button-${book.id}`} onClick={() => handleOpenModal("delete", book)} />
                             </TableCell>
                         </TableRow>
                     ))}
